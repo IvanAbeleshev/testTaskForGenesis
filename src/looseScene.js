@@ -1,4 +1,6 @@
 import { Scene } from "phaser";
+import { dataApp } from "./appData";
+import { addDataLexi, createAnimation, createObjLexi, hideSentence } from "./commonFunctions";
 
 export class LooseScene extends Scene {
     constructor() {
@@ -7,30 +9,16 @@ export class LooseScene extends Scene {
         });
     }
 
-    init(data){
-        this.selectedDress = data.selectedDress;
-        this.selectedAccessory = data.selectedAccessory;
-        this.selectedAccessory2 = data.selectedAccessory2;
-    } 
-
     preload() {
+        dataApp.currentStage = 5;
+        addDataLexi(this);
 
-        this.load.path = 'img/';
+        this.load.path = 'newImg/';
         this.load.image('backgroundImage', 'finalBackground.png');
-
-        this.load.path = 'img/Scene3/';
-        this.load.image('LXDefLos', `Lexi-default-${this.selectedDress}-${this.selectedAccessory}-${this.selectedAccessory2}.png`);
-        this.load.image('LXJoyLos', `Lexi-joy-${this.selectedDress}-${this.selectedAccessory}-${this.selectedAccessory2}.png`);
-        this.load.image('LXSadLos', `Lexi-sad-${this.selectedDress}-${this.selectedAccessory}-${this.selectedAccessory2}.png`);
-
-        this.load.path = 'img/amazingScene/';
         this.load.image('Jack', 'Jack.png');
 
-        this.load.path = 'img/looseScene/';
+        this.load.path = 'newImg/looseScene/';
         this.load.image('sentenceJackLoose', 'JackSentence.png');
-
-        this.load.path = 'img/';
-        this.load.image('hitpointer', 'cursor.png');
 
     }
     
@@ -38,32 +26,20 @@ export class LooseScene extends Scene {
         
         this.cameras.main.setBounds(0, 0, 1080, 980);
         this.cameras.main.scrollX +=100;
-        this.anims.create({
-            key: 'LXLos',
-            frames: [
-                { key: 'LXDefLos' },
-                { key: 'LXSadLos', duration: 1 }
-            ],
-            frameRate: 2,
-            repeat: 1
-        });
+        
+        createObjLexi(this, 'LexiSad', 'emotionSad');
+        createObjLexi(this, 'LexiDefault', 'emotionDefault');
+
+        this.sadAnimation = createAnimation(['LexiDefault', 'LexiSad'], 'sad', this);
 
         const background = this.add.image(-200, 0, 'backgroundImage').setOrigin(0);
 
         const Jack = this.add.image(400, 400, 'Jack').setScale(0.5);
-        this.Lexi= this.add.sprite(200, 420, 'LXDefLos').setScale(0.3);
+        this.Lexi = this.add.sprite(200, 420, 'LexiDefault').setScale(0.3);
         const sentenceJack = this.add.image(300, 550, 'sentenceJackLoose').setScale(0.3);
              
         const idTimer = setTimeout(() => {
-            let currentSacaleValue = sentenceJack.scale;
-            const keyInterval = setInterval(() => {
-                sentenceJack.setScale(currentSacaleValue);
-                currentSacaleValue -=0.02;
-                if(currentSacaleValue <= 0){
-                    sentenceJack.destroy();
-                    clearInterval(keyInterval);
-                }
-            }, 10);
+            hideSentence(sentenceJack);
             
             const keyIntervalJack = setInterval(() => {
                 Jack.x +=3;
@@ -80,7 +56,7 @@ export class LooseScene extends Scene {
                 this.cameras.main.scrollX -=1;
                 distance ++;
                 if(distance >= 100){
-                    this.Lexi.play('LXLos');
+                    this.Lexi.play(this.sadAnimation);
                     clearInterval(idLexiMove);
                 }
             }, 3);

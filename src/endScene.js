@@ -8,13 +8,13 @@ export class EndScene extends Scene {
     }
     
     preload(){
-        this.load.path = 'img/';
+        this.load.path = 'newImg/';
         this.load.image('hitpointer', 'cursor.png');
     }
 
     create() {
         
-        var style = { font: "bold 24px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+        const style = { font: "bold 24px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
         const textBox = this.add.graphics();
         textBox.fillStyle(0x222222, 0.8);
@@ -24,9 +24,9 @@ export class EndScene extends Scene {
         text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
 
         const handleLink = () =>{
-            var url = 'https://apps.apple.com/us/app/id1491717191';
+            const url = 'https://apps.apple.com/us/app/id1491717191';
     
-            var s = window.open(url, '_blank');
+            const s = window.open(url, '_blank');
         
             if (s && s.focus)
             {

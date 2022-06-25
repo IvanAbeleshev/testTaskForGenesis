@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { addDataLexi, createAnimation, createObjLexi, showSentence, hideSentence } from "./commonFunctions";
 
 export class GameSceneIntro extends Scene {
     constructor() {
@@ -7,95 +8,54 @@ export class GameSceneIntro extends Scene {
         });
     }
 
-    preload() {
-        //this.load.atlas('introMan', 'img/intro_man.png', 'img/intro_man.json');
-        
-        this.load.path = 'img/intro/';
-
+    preload() {    
+        this.load.path = 'newImg/intro/';
         this.load.image('sentenceLexi1', 'sentenceLexy1.png');
-        this.load.image('sentenceLexi2', 'sentenceLexy1.png');
+        this.load.image('sentenceLexi2', 'sentenceLexy2.png');
+        this.load.path = 'newImg/';
         this.load.image('introBackgroundImage', 'introBackgroundImage.png');
 
-        this.load.path = 'img/intro/Lexi/';
-        this.load.image('LexiDefault', 'Lexi-default.png');
-        this.load.image('LexiJoy', 'Lexi-joy.png');
-        this.load.image('LexiSurprised', 'Lexi-surprised.png');
+        addDataLexi(this);
+
     }
     
     create() {
-        
+
+        //add bg
         const background = this.add.image(0, 350, 'introBackgroundImage').setScale(0.8);
         background.tint = 0x808080;
 
-        this.anims.create({
-            key: 'LexiSurprised',
-            frames: [
-                { key: 'LexiDefault' },
-                { key: 'LexiSurprised', duration: 1.5 }
-            ],
-            frameRate: 2,
-            repeat: 1.5
-        });
+        //create textures hero Lexi
+        createObjLexi(this, 'LexiJoy', 'emotionJoy');
+        createObjLexi(this, 'LexiSurprised', 'emotionSurprised');
+        createObjLexi(this, 'LexiDefault', 'emotionDefault');
 
-        this.anims.create({
-            key: 'LexiJoy',
-            frames: [
-                { key: 'LexiDefault' },
-                { key: 'LexiJoy', duration: 1.5 }
-            ],
-            frameRate: 2,
-            repeat: 1.5
-        });
+        //create animations
+        const surprisedAnimation = createAnimation(['LexiDefault', 'LexiSurprised'], 'surprised', this);
+        const joyAnimation = createAnimation(['LexiDefault', 'LexiJoy'], 'joy', this);
 
-        const Lexi= this.add.sprite(200, 400, 'LexiDefault').setScale(0.4);
-        Lexi.play('LexiSurprised');
+        //render Lexi
+        const Lexi = this.add.sprite(200, 400, 'LexiDefault').setScale(0.4);
+        Lexi.play(surprisedAnimation);
 
-        const sentenceLexi1 = this.add.image(200, 370, 'sentenceLexi1').setScale(0.22);
+        //add sentences
+        const sentenceLexi1 = this.add.image(200, 370, 'sentenceLexi1').setScale(0);
         const sentenceLexi2 = this.add.image(200, 370, 'sentenceLexi2').setScale(0);
-        let currentSacaleValue = 0;
-        const keyInterval = setInterval(() => {
-            sentenceLexi1.setScale(currentSacaleValue);
-            currentSacaleValue +=0.02;
-            if(currentSacaleValue>0.22){
-                clearInterval(keyInterval);
-            }
-        }, 10);
 
+        showSentence(sentenceLexi1);
+        
         setTimeout(() => {
-            let currentSacaleValue = sentenceLexi1.scale;
-            const idSentenceLexi1 = setInterval(() => {
-                sentenceLexi1.setScale(currentSacaleValue);
-                currentSacaleValue -=0.02;
-                if(currentSacaleValue<= 0){
-                    clearInterval(idSentenceLexi1);
-                    sentenceLexi1.destroy();
-                }   
-            }, 7);
+            hideSentence(sentenceLexi1);
             Lexi.stop();
-            Lexi.play('LexiJoy');
+            Lexi.play(joyAnimation);
         }, 1500);
 
         setTimeout(() => {
-            let currentSacaleValue = sentenceLexi2.scale;
-            const idSentenceLexi2 = setInterval(() => {
-                sentenceLexi2.setScale(currentSacaleValue);
-                currentSacaleValue +=0.02;
-                if(currentSacaleValue > 0.22){
-                    clearInterval(idSentenceLexi2);
-                }   
-            }, 10);
+            showSentence(sentenceLexi2);
         }, 1700);
 
         setTimeout(() => {
-            let currentSacaleValue = sentenceLexi2.scale;
-            const idSentenceLexi2 = setInterval(() => {
-                sentenceLexi2.setScale(currentSacaleValue);
-                currentSacaleValue -=0.02;
-                if(currentSacaleValue <= 0){
-                    clearInterval(idSentenceLexi2);
-                    sentenceLexi2.destroy();
-                }   
-            }, 7);
+            hideSentence(sentenceLexi2);
             Lexi.stop();
         }, 3000);
 
@@ -103,7 +63,7 @@ export class GameSceneIntro extends Scene {
         setTimeout(() => {
             this.scene.start('GameSceneTutorial');
         }, 3100);
-
+        
     }
 
 };

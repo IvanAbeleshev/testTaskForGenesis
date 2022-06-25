@@ -19,6 +19,7 @@ const config= {
 };
 
 
-var game = new Phaser.Game(config);
+const game = new Phaser.Game(config);
+game.dataStorage = undefined;
 
 

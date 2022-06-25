@@ -1,4 +1,6 @@
 import { Scene } from "phaser";
+import { dataApp } from "./appData";
+import { addDataLexi, createAnimation, createObjLexi, hideSentence } from "./commonFunctions";
 
 export class AmazingScene extends Scene {
     constructor() {
@@ -7,27 +9,15 @@ export class AmazingScene extends Scene {
         });
     }
 
-    init(data){
-        this.selectedDress = data.selectedDress;
-        this.selectedAccessory = data.selectedAccessory;
-        this.selectedAccessory2 = data.selectedAccessory2;
-    }
-
     preload() {
-
-        this.load.path = 'img/';
+        dataApp.currentStage = 5;
+        addDataLexi(this);
+        this.load.path = 'newImg/';
         this.load.image('backgroundImage', 'finalBackground.png');
-
-        this.load.path = 'img/Scene3/';
-        this.load.image('LXDefAm', `Lexi-default-${this.selectedDress}-${this.selectedAccessory}-${this.selectedAccessory2}.png`);
-        this.load.image('LXJoyAm', `Lexi-joy-${this.selectedDress}-${this.selectedAccessory}-${this.selectedAccessory2}.png`);
-        
-        this.load.path = 'img/amazingScene/';
         this.load.image('Jack', 'Jack.png');
+        
+        this.load.path = 'newImg/amazingScene/';
         this.load.image('sentenceJack', 'JackSentance.png');
-
-        this.load.path = 'img/';
-        this.load.image('hitpointer', 'cursor.png');
 
     }
     
@@ -35,32 +25,19 @@ export class AmazingScene extends Scene {
         this.cameras.main.setBounds(0, 0, 1080, 980);
         this.cameras.main.scrollX +=100;
 
-        this.anims.create({
-            key: 'LXJoyAm',
-            frames: [
-                { key: 'LXDefAm' },
-                { key: 'LXJoyAm', duration: 1 }
-            ],
-            frameRate: 2,
-            repeat: 1
-        });
+        createObjLexi(this, 'LexiJoy', 'emotionJoy');
+        createObjLexi(this, 'LexiDefault', 'emotionDefault');
+
+        this.joyAnimation = createAnimation(['LexiDefault', 'LexiJoy'], 'joy', this);
 
         const background = this.add.image(-200, 0, 'backgroundImage').setOrigin(0);
 
         const Jack = this.add.image(400, 400, 'Jack').setScale(0.5);
-        this.Lexi= this.add.sprite(200, 420, 'LXDefAm').setScale(0.3);
+        this.Lexi = this.add.sprite(200, 420, 'LexiDefault').setScale(0.3);
         const sentenceJack = this.add.image(300, 550, 'sentenceJack').setScale(0.3);
              
         const idTimer = setTimeout(() => {
-            let currentSacaleValue = sentenceJack.scale;
-            const keyInterval = setInterval(() => {
-                sentenceJack.setScale(currentSacaleValue);
-                currentSacaleValue -=0.02;
-                if(currentSacaleValue <= 0){
-                    sentenceJack.destroy();
-                    clearInterval(keyInterval);
-                }
-            }, 10);
+            hideSentence(sentenceJack);
             
             const keyIntervalJack = setInterval(() => {
                 Jack.x +=3;
@@ -77,7 +54,7 @@ export class AmazingScene extends Scene {
                 this.cameras.main.scrollX -=1;
                 distance ++;
                 if(distance >= 100){
-                    this.Lexi.play('LXJoyAm');
+                    this.Lexi.play(this.joyAnimation);
                     clearInterval(idLexiMove);
                 }
             }, 3);
